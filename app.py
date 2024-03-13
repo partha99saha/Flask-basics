@@ -17,38 +17,16 @@ def index():
     return "Flask App is Running on PORT: 5000"
 
 
-# def isValidEmail(email):
-#     regex = re.compile(
-#         r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
-#     if re.fullmatch(regex, email):
-#         return True
-#     else:
-#         return False
-#
-# {
-#     'available': True,
-#     'title': 'Don Quixote',
-#     'timestamp': datetime.datetime.now()
-# }
-
 @app.route("/add-books", methods=['POST'])
 def addBooks():
     req_data = request.get_json()
-    # print(req_data)
-    # email = req_data['email']
-    # if not isValid(email):
-    #     return jsonify({
-    #         'status': '422',
-    #         'res': 'failure',
-    #         'error': 'Invalid email format. Please enter a valid email address'
-    #     })
     title = req_data['title']
     library = [books.serialize() for books in db.view()]
     for books in library:
         if books['title'] == title:
             return jsonify({
                 'res': f'Book with title {title} is already in library!',
-                'status': '404'
+                'status': '409'
             })
 
     books_details = Book(db.getNewId(), True, title, datetime.datetime.now())
@@ -68,7 +46,7 @@ def getBooks():
         return jsonify({
             'res': library,
             'status': '200',
-            'msg': 'Successfully all books retrived!'
+            'msg': 'Successfully all books retrieved!'
         })
     else:
         return jsonify({
@@ -147,11 +125,10 @@ def deleteRequest(id):
                     'msg': 'Successfully book deleted',
                     'no_of_books': len(updated_library)
                 })
-    else:
-        return jsonify({
-            'error': "No Book Found!",
-            'status': '404'
-        })
+    return jsonify({
+        'error': "No Book Found!",
+        'status': '404'
+    })
 
 
 if __name__ == '__main__':
