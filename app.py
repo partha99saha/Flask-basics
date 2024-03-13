@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['ENV'] = 'development'
 
@@ -25,10 +24,6 @@ import Routes.auth
 import Routes.books
 from models.Book import Book
 from models.User import User
-
-#create DB
-with app.app_context():
-    db.create_all()
 
 
 if __name__ == "__main__":
