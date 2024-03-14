@@ -11,7 +11,7 @@ def addBooks():
         title = request.json.get('title')
         if not title:
             return jsonify({
-                'error': 'Title is required in the request JSON.',
+                'error': 'Title is required',
                 'status': 400
             }), 400
 
@@ -53,19 +53,18 @@ def getBooks():
                 'res': serialized_books,
                 'status': 200,
                 'msg': 'Successfully retrieved all books!'
-            })
+            }), 200
         else:
             return jsonify({
                 'error': 'No books found in the library!',
                 'status': 404
-            })
+            }), 404
     except Exception as e:
         print("Error occurred during get-books:", str(e))
         return jsonify({
             'error': 'An error occurred while retrieving books',
-            'status': 500,
-            'details': str(e)
-        })
+            'status': 500
+        }), 500
 
 
 @app.route('/get-book/<int:id>', methods=['GET'])
@@ -90,8 +89,7 @@ def getbook(id):
         print("Error occurred during get-book:", str(e))
         return jsonify({
             'error': 'Internal Server Error',
-            'status': 500,
-            'msg': str(e)
+            'status': 500
         }), 500
 
 
@@ -141,18 +139,18 @@ def deleteRequest(id):
             db.session.delete(book_detail)
             db.session.commit()
             return jsonify({
-                'status': 'success',
+                'status': 200,
                 'message': 'Book deleted successfully.'
             }), 200
         else:
             return jsonify({
                 'error': 'Book not found.',
-                'status': 'error'
+                'status': 404
             }), 404
     except Exception as e:
         print("Error occurred during delete-book:", str(e))
         db.session.rollback()
         return jsonify({
             'error': 'An error occurred while deleting the book.',
-            'status': 'error'
+            'status': 500
         }), 500

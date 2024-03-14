@@ -16,11 +16,10 @@ class Book(db.Model):
         self.available = available
 
     def __repr__(self):
-        return "<Book(title='%s', available='%s', updated_at='%s')>" % (self.title, self.available, self.updated_at)
+        return "<Book(title='%s', available='%s')>" % (self.title, self.available)
 
     def serialize(self):
         return {
             'title': self.title,
-            'available': self.available,
-            'updated_at': self.updated_at
+            'available': self.available
         }

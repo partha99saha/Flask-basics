@@ -4,7 +4,7 @@ from models.User import User
 from flask import jsonify, request
 import jwt
 import datetime
-from utils.utils import success_response, error_response
+from utils.utils import success_response, error_response, is_valid_email, is_validate_password
 
 
 @app.route('/signup', methods=['POST'])
@@ -15,7 +15,15 @@ def signup():
         password = data.get('password')
 
         if not (username and password):
-            return jsonify(error_response('Please submit a username and a password')), 400
+            return jsonify(error_response('Please enter username and password')), 400
+        if not is_valid_email(username):
+            return jsonify(error_response('Please enter a valid username')), 400
+        if not is_validate_password(password):
+            return jsonify(error_response('Please enter a valid password')), 400
+
+        is_existing_user = User.query.filter_by(username=username).first()
+        if is_existing_user:
+            return jsonify(error_response('User already exsists')), 400
 
         # Hash the password using bcrypt
         hashed_password = generate_password_hash(password)
@@ -39,19 +47,20 @@ def login():
         username = data.get('username')
         password = data.get('password')
 
-        # Missing credentials
         if not (username and password):
             return jsonify({'error': 'Please provide username and password'}), 400
 
-        # Query the user from the database
         user = User.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.password, password):
-            # Authentication successful, generate JWT token
+            # generate JWT token
             token = jwt.encode({'id': user.id,
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)},
                                app.config['JWT_SECRET'], algorithm='HS256')
+
             return jsonify({'token': token}), 200
+        else:
+            return jsonify({'error': 'Login failed, Username or password is wrong'}), 400
 
     except Exception as e:
         print("Error occurred during login:", str(e))

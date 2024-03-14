@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
 
 app = Flask(__name__)
 
@@ -16,14 +15,13 @@ else:
 # ORM setup
 db = SQLAlchemy(app)
 
-# migration code
-# migrate = Migrate(app, db)
+# Models import
+from models.User import User
+from models.Book import Book
 
-# Routes setup
+# Routes import
 import Routes.auth
 import Routes.books
-from models.Book import Book
-from models.User import User
 
 
 if __name__ == "__main__":
