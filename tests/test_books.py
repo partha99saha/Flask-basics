@@ -1,7 +1,12 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from app import app
+import sys
+import os
 
+project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_dir)
+
+from app import app
 
 @pytest.fixture
 def client():
@@ -67,7 +72,8 @@ def test_get_books_empty(mock_Book, client):
 
     response = client.get("/get-books")
     assert response.status_code == 404
-    assert response.json == {"error": "No books found in the library!", "status": 404}
+    assert response.json == {
+        "error": "No books found in the library!", "status": 404}
 
 
 @patch("routes.Book")
@@ -119,7 +125,8 @@ def test_update_book_not_found(mock_Book, client):
 
     response = client.put("/update-book/1", json={"title": "Updated Title"})
     assert response.status_code == 404
-    assert response.json == {"error": "No Book Found with that ID.", "status": 404}
+    assert response.json == {
+        "error": "No Book Found with that ID.", "status": 404}
 
 
 @patch("routes.Book")
@@ -129,7 +136,8 @@ def test_delete_book_success(mock_Book, client):
 
     response = client.delete("/delete-book/1")
     assert response.status_code == 200
-    assert response.json == {"status": 200, "message": "Book deleted successfully."}
+    assert response.json == {"status": 200,
+                             "message": "Book deleted successfully."}
 
 
 @patch("routes.Book")
