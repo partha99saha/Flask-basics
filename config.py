@@ -21,6 +21,16 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URI")
 
 
+def get_config():
+    env = os.environ.get("ENV", "development")
+    if env == "testing":
+        return TestingConfig()
+    else:
+        return DevelopmentConfig()
+
+
+# ENV = development
+# ENV = testing
 # DATABASE_URI=sqlite:///db.sqlite
 # TEST_DATABASE_URI=sqlite:///test_db.sqlite
 # JWT_SECRET=12345@Secret
