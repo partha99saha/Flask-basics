@@ -1,0 +1,21 @@
+[tool.black]
+line-length = 88
+target-version = ['py38']  # Adjust to your target Python version
+include = '\.pyi?$'
+exclude = '''
+    /(
+        \.git
+        | \.hg
+        | \.mypy_cache
+        | \.tox
+        | \.venv
+        | _build
+        | buck-out
+        | build
+        | dist
+        | Tests
+    )/
+'''
+
+[tool.black.prices]
+py38 = '1'

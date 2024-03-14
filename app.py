@@ -3,12 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['ENV'] = 'development'
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["ENV"] = "development"
 
 # Configuration
-if app.config['ENV'] == 'testing':
-    app.config.from_object('config.TestingConfig')
+if app.config["ENV"] == "testing":
+    app.config.from_object("config.TestingConfig")
 else:
     app.config.from_object("config.DevelopmentConfig")
 

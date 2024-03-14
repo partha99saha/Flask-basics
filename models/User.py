@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, Integer, DateTime
 
 
 class User(db.Model):
-    __tablename__ = 'User'
+    __tablename__ = "User"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(20), nullable=False, unique=True)
@@ -19,7 +19,4 @@ class User(db.Model):
         return "<User(%s,%s)>" % (self.username, self.password)
 
     def serialize(self):
-        return {
-            'username': self.username,
-            'password': self.password
-        }
+        return {"username": self.username, "password": self.password}

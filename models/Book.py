@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, Integer, DateTime
 
 
 class Book(db.Model):
-    __tablename__ = 'Book'
+    __tablename__ = "Book"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(200), nullable=False, unique=True)
@@ -19,7 +19,4 @@ class Book(db.Model):
         return "<Book(title='%s', available='%s')>" % (self.title, self.available)
 
     def serialize(self):
-        return {
-            'title': self.title,
-            'available': self.available
-        }
+        return {"title": self.title, "available": self.available}

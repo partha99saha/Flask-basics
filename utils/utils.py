@@ -1,5 +1,6 @@
 import re
 
+
 # Regular expression for basic email validation
 def is_valid_email(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -16,8 +17,8 @@ def is_validate_password(password):
 
 
 def success_response(message):
-    return {'message': message, 'success': True}
+    return {"message": message, "success": True}
 
 
 def error_response(message):
-    return {'message': message, 'success': False}
+    return {"message": message, "success": False}
