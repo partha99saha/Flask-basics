@@ -53,10 +53,13 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.password, password):
+            payload = {
+                'user_id': user.id,
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+            }
+            secret_key = app.config['JWT_SECRET']
             # generate JWT token
-            token = jwt.encode({'id': user.id,
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)},
-                               app.config['JWT_SECRET'], algorithm='HS256')
+            token = jwt.encode(payload, secret_key, algorithm='HS256')
 
             return jsonify({'token': token}), 200
         else:

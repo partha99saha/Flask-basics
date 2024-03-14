@@ -10,14 +10,16 @@ def auth_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         token = None
-        # Check if the token is provided in headers or JSON payload
+
+        # Check if the token is provided in headers or not
         if 'Authorization' in request.headers:
-            token = request.headers.get('Authorization', None)
-            token = token.replace('Bearer ', '')
+            token = request.headers.get('Authorization')
+            if token.startswith('Bearer '):
+                token = token.split('Bearer ')[1]
         elif 'x-access-token' in request.headers:
-            token = request.headers.get('x-access-token', None)
+            token = request.headers.get('x-access-token')
         elif 'token' in request.json:
-            token = request.json.get('token', None)
+            token = request.json.get('token')
 
         # If token is not provided
         if not token:
@@ -25,9 +27,12 @@ def auth_required(f):
 
         try:
             # Decode the token
-            decoded = jwt.decode(token, app.config['JWT_SECRET'])
-            # Retrieve user based on user ID from token
-            user = User.query.filter_by(id=decoded.get('id')).first()
+            JWT_SECRET = app.config['JWT_SECRET']
+            decoded = jwt.decode(
+                token, JWT_SECRET, algorithms=['HS256'])
+            user_id = decoded.get('user_id')
+            user = User.query.filter_by(id=user_id).first()
+            user = user.serialize()
             if not user:
                 return jsonify(success_response('Invalid User')), 401
 
@@ -36,7 +41,6 @@ def auth_required(f):
         except jwt.InvalidTokenError:
             return jsonify(error_response('Invalid Token')), 401
 
-        # Pass the user to the route function
-        return f(user, *args, **kwargs)
+        return f(*args, **kwargs)
 
     return decorator
