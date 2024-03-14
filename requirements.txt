@@ -5,6 +5,7 @@ aioitertools @ file:///tmp/build/80754af9/aioitertools_1607109665762/work
 aiosignal @ file:///tmp/build/80754af9/aiosignal_1637843061372/work
 aiosqlite @ file:///croot/aiosqlite_1683773899903/work
 alabaster @ file:///home/ktietz/src/ci/alabaster_1611921544520/work
+alembic==1.13.1
 anaconda-catalogs @ file:///croot/anaconda-catalogs_1685727283692/work
 anaconda-client==1.11.3
 anaconda-navigator==2.4.2
@@ -35,7 +36,7 @@ binaryornot @ file:///tmp/build/80754af9/binaryornot_1617751525010/work
 black @ file:///croot/black_1680737249031/work
 bleach @ file:///opt/conda/conda-bld/bleach_1641577558959/work
 blink==0.2.0
-blinker==1.4
+blinker==1.7.0
 blis==0.7.11
 bokeh @ file:///croot/bokeh_1684534016720/work
 boltons @ file:///work/ci_py311/boltons_1677685195580/work
@@ -49,7 +50,7 @@ certifi @ file:///croot/certifi_1683875369620/work/certifi
 cffi==1.14.6
 chardet @ file:///work/ci_py311/chardet_1676830276092/work
 charset-normalizer @ file:///tmp/build/80754af9/charset-normalizer_1630003229654/work
-click==8.0.1
+click==8.1.7
 cloudpathlib==0.16.0
 cloudpickle @ file:///croot/cloudpickle_1683040006038/work
 clyent==1.2.2
@@ -103,12 +104,15 @@ face_recognition_models==0.3.0
 fastjsonschema @ file:///work/ci_py311_2/python-fastjsonschema_1679340124475/work
 filelock==3.13.1
 flake8 @ file:///work/ci_py311/flake8_1677709235205/work
-Flask==2.0.2
+Flask==3.0.2
 Flask-Cors==4.0.0
 Flask-Login==0.5.0
 Flask-Mail==0.9.1
+flask-marshmallow==1.2.0
+Flask-Migrate==4.0.7
 flask-mongoengine==1.0.0
-Flask-SQLAlchemy==2.5.1
+Flask-SQLAlchemy==3.1.1
+Flask-Testing==0.8.1
 Flask-User==1.0.2.2
 Flask-WTF==0.15.1
 fonttools==4.25.0
@@ -147,12 +151,12 @@ isoduration==20.11.0
 isort @ file:///tmp/build/80754af9/isort_1628603791788/work
 itemadapter @ file:///tmp/build/80754af9/itemadapter_1626442940632/work
 itemloaders @ file:///opt/conda/conda-bld/itemloaders_1646805235997/work
-itsdangerous @ file:///tmp/build/80754af9/itsdangerous_1621432558163/work
+itsdangerous==2.1.2
 jaraco.classes @ file:///tmp/build/80754af9/jaraco.classes_1620983179379/work
 jedi @ file:///work/ci_py311_2/jedi_1679336495545/work
 jeepney @ file:///tmp/build/80754af9/jeepney_1627537048313/work
 jellyfish @ file:///work/ci_py311/jellyfish_1676844347260/work
-Jinja2==3.0.2
+Jinja2==3.1.3
 jinja2-time @ file:///opt/conda/conda-bld/jinja2-time_1649251842261/work
 jmespath @ file:///Users/ktietz/demo/mc3/conda-bld/jmespath_1630583964805/work
 joblib @ file:///croot/joblib_1685113087166/work
@@ -187,9 +191,12 @@ lmdb @ file:///croot/python-lmdb_1682522346377/work
 locket @ file:///work/ci_py311/locket_1676827274546/work
 lxml @ file:///work/ci_py311/lxml_1676823603437/work
 lz4 @ file:///croot/lz4_1686057876374/work
+Mako==1.3.2
 Markdown @ file:///work/ci_py311/markdown_1676837083112/work
 markdown-it-py @ file:///croot/markdown-it-py_1684279902645/work
-MarkupSafe==2.0.1
+MarkupSafe==2.1.5
+marshmallow==3.21.1
+marshmallow-sqlalchemy==1.0.0
 matplotlib @ file:///croot/matplotlib-suite_1679593461707/work
 matplotlib-inline @ file:///work/ci_py311/matplotlib-inline_1676823841154/work
 mccabe @ file:///opt/conda/conda-bld/mccabe_1644221741721/work
@@ -291,6 +298,7 @@ PySocks @ file:///work/ci_py311/pysocks_1676822712504/work
 pyspark==3.5.1
 pytest @ file:///croot/pytest_1684171585955/work
 python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
+python-dotenv==1.0.1
 python-json-logger @ file:///croot/python-json-logger_1683823803357/work
 python-lsp-black @ file:///work/ci_py311/python-lsp-black_1676845562358/work
 python-lsp-jsonrpc==1.0.0
@@ -351,7 +359,7 @@ sphinxcontrib-qthelp @ file:///home/ktietz/src/ci/sphinxcontrib-qthelp_161192105
 sphinxcontrib-serializinghtml @ file:///tmp/build/80754af9/sphinxcontrib-serializinghtml_1624451540180/work
 spyder @ file:///croot/spyder_1681934064788/work
 spyder-kernels @ file:///croot/spyder-kernels_1681307264370/work
-SQLAlchemy==1.4.25
+SQLAlchemy==2.0.28
 sqlparse==0.4.4
 srsly==2.4.8
 stack-data @ file:///opt/conda/conda-bld/stack_data_1646927590127/work
@@ -398,7 +406,7 @@ weasel==0.3.4
 webcolors==1.13
 webencodings==0.5.1
 websocket-client @ file:///work/ci_py311/websocket-client_1676824890004/work
-Werkzeug==2.0.2
+Werkzeug==3.0.1
 whatthepatch @ file:///work/ci_py311/whatthepatch_1677708379946/work
 widgetsnbextension @ file:///croot/widgetsnbextension_1679313860248/work
 wrapt @ file:///work/ci_py311/wrapt_1676827586170/work
