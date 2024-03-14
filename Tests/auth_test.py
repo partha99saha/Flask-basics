@@ -1,47 +1,69 @@
 import pytest
-from unittest.mock import MagicMock
-from app import app, db
-from models.User import User
+from unittest.mock import MagicMock, patch
+from app import app
 
 
 @pytest.fixture
 def client():
-    app.config['TESTING'] = True
     with app.test_client() as client:
-        with app.app_context():
-            db.create_all()
         yield client
-        db.drop_all()
 
 
-def test_signup(client):
-    # Mock the request data
-    client.post = MagicMock()
-    client.post.json = MagicMock(
-        return_value={'username': 'test_user', 'password': 'password'})
+@patch('routes.User')
+def test_signup_success(mock_User, client):
+    mock_user_instance = MagicMock()
+    mock_User.query.filter_by.return_value.first.return_value = None
+    mock_User.return_value = mock_user_instance
+    mock_user_instance.username = 'testuser'
+    mock_user_instance.password = 'hashed_password'
+    mock_user_instance.id = 1
 
-    # Make a request to the signup route
-    response = client.post('/signup')
-
-    # Assert the response
+    response = client.post(
+        '/signup', json={'username': 'testuser', 'password': 'password123'})
     assert response.status_code == 200
-    assert b'User successfully created' in response.data
 
 
-def test_login(client):
-    # Create a test user
-    test_user = User(username='test_user', password='password')
-    db.session.add(test_user)
-    db.session.commit()
+@patch('routes.User')
+def test_signup_existing_user(mock_User, client):
+    mock_user_instance = MagicMock()
+    mock_User.query.filter_by.return_value.first.return_value = MagicMock()
+    mock_User.return_value = mock_user_instance
 
-    # Mock the request data
-    client.post = MagicMock()
-    client.post.json = MagicMock(
-        return_value={'username': 'test_user', 'password': 'password'})
+    response = client.post(
+        '/signup', json={'username': 'existinguser', 'password': 'password123'})
+    assert response.status_code == 400
 
-    # Make a request to the login route
-    response = client.post('/login')
 
-    # Assert the response
+@patch('routes.User')
+def test_signup_invalid_email(mock_User, client):
+    response = client.post(
+        '/signup', json={'username': 'invalidemail', 'password': 'password123'})
+    assert response.status_code == 400
+
+
+@patch('routes.User')
+def test_signup_invalid_password(mock_User, client):
+    response = client.post(
+        '/signup', json={'username': 'testuser', 'password': 'pass'})
+    assert response.status_code == 400
+
+
+@patch('routes.User')
+def test_login_success(mock_User, client):
+    mock_user_instance = MagicMock()
+    mock_User.query.filter_by.return_value.first.return_value = mock_user_instance
+    mock_user_instance.username = 'testuser'
+    mock_user_instance.password = 'hashed_password'
+
+    response = client.post(
+        '/login', json={'username': 'testuser', 'password': 'password123'})
     assert response.status_code == 200
-    assert b'token' in response.data
+
+
+@patch('routes.User')
+def test_login_failure(mock_User, client):
+    mock_User.query.filter_by.return_value.first.return_value = None
+
+    response = client.post(
+        '/login', json={'username': 'invaliduser', 'password': 'password123'})
+    assert response.status_code == 400
