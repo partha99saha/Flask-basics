@@ -11,8 +11,8 @@ app.config.from_object(get_config())
 db = SQLAlchemy(app)
 
 # Models import
-from models.User import User
-from models.Book import Book
+import models.User
+import models.Book
 
 # Routes import
 import Routes.auth
