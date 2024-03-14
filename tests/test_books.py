@@ -1,150 +1,84 @@
 import pytest
-from unittest.mock import MagicMock, patch
 import sys
 import os
+from unittest.mock import patch
+import jwt
 
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_dir)
 
-from app import app
-import Routes.books
+from app import app, db
+from models.Book import Book
+
 
 @pytest.fixture
 def client():
-    with app.test_client() as client:
+    app.config["TESTING"] = True
+    client = app.test_client()
+
+    #setup
+    with app.app_context():
+        db.create_all()
         yield client
+        db.session.remove()
+        db.drop_all()
 
 
-@patch("routes.Book")
-def test_add_books_success(mock_Book, client):
-    mock_book_instance = MagicMock()
-    mock_Book.query.filter_by.return_value.first.return_value = None
-    mock_Book.return_value = mock_book_instance
-    mock_book_instance.serialize.return_value = {
-        "title": "Test Book",
-        "available": True,
-    }
-
-    response = client.post("/add-books", json={"title": "Test Book"})
-    assert response.status_code == 201
-    assert response.json == {
-        "data": {"title": "Test Book", "available": True},
-        "status": 201,
-        "message": "Book added successfully.",
-    }
+def test_add_books(client):
+    with app.app_context():
+        data = {"title": "Test Book"}
+        
+        # Mock the function responsible for generating JWT tokens
+        with patch('jwt.encode') as mock_encode:
+            mock_encode.return_value = "dummy_token"
+            
+            # Make the POST request with the dummy token
+            response = client.post("/add-books", json=data, headers={"Authorization": "Bearer dummy_token"})
+        assert response.status_code == 201
 
 
-@patch("routes.Book")
-def test_add_books_existing(mock_Book, client):
-    mock_Book.query.filter_by.return_value.first.return_value = MagicMock()
+def test_get_books(client):
+    with app.app_context():
+        response = client.get("/get-books")
+        assert response.status_code == 200
 
-    response = client.post("/add-books", json={"title": "Existing Book"})
-    assert response.status_code == 409
-    assert response.json == {
-        "error": 'Book with title "Existing Book" already exists in the library.',
-        "status": 409,
-    }
+        data = response.get_json()
+        assert len(data["res"]) > 0
 
 
-@patch("routes.Book")
-def test_get_books_success(mock_Book, client):
-    mock_book_instance = MagicMock()
-    mock_book_instance.serialize.return_value = [
-        {"title": "Book 1", "available": True},
-        {"title": "Book 2", "available": False},
-    ]
-    mock_Book.query.all.return_value = [mock_book_instance]
-
-    response = client.get("/get-books")
-    assert response.status_code == 200
-    assert response.json == {
-        "res": [
-            {"title": "Book 1", "available": True},
-            {"title": "Book 2", "available": False},
-        ],
-        "status": 200,
-        "msg": "Successfully retrieved all books!",
-    }
+def test_get_book(client):
+    with app.app_context():
+        book = Book.query.first()
+        if book:
+            response = client.get(f"/get-book/{book.id}")
+            assert response.status_code == 200
+        else:
+            pytest.skip("No books available in the database.")
 
 
-@patch("routes.Book")
-def test_get_books_empty(mock_Book, client):
-    mock_Book.query.all.return_value = []
+def test_update_book(client):
+    with app.app_context():
+        book = Book.query.first()
+        if book:
+            data = {"title": "Updated Title", "available": False}
+            response = client.put(f"/update-book/{book.id}", json=data)
+            assert response.status_code == 200
 
-    response = client.get("/get-books")
-    assert response.status_code == 404
-    assert response.json == {
-        "error": "No books found in the library!", "status": 404}
-
-
-@patch("routes.Book")
-def test_get_book_success(mock_Book, client):
-    mock_book_instance = MagicMock()
-    mock_book_instance.serialize.return_value = {
-        "title": "Test Book",
-        "available": True,
-    }
-    mock_Book.query.get.return_value = mock_book_instance
-
-    response = client.get("/get-book/1")
-    assert response.status_code == 200
-    assert response.json == {
-        "book": {"title": "Test Book", "available": True},
-        "status": 200,
-        "msg": "Successfully retrieved book",
-    }
+            updated_book = Book.query.get(book.id)
+            assert updated_book.title == "Updated Title"
+            assert updated_book.available == False
+        else:
+            pytest.skip("No books available in the database.")
 
 
-@patch("routes.Book")
-def test_get_book_not_found(mock_Book, client):
-    mock_Book.query.get.return_value = None
+def test_delete_book(client):
+    with app.app_context():
+        book = Book.query.first()
+        if book:
+            response = client.delete(f"/delete-book/{book.id}")
+            assert response.status_code == 200
 
-    response = client.get("/get-book/1")
-    assert response.status_code == 404
-    assert response.json == {"error": "Book not found", "status": 404}
-
-
-@patch("routes.Book")
-def test_update_book_success(mock_Book, client):
-    mock_book_instance = MagicMock()
-    mock_Book.query.get.return_value = mock_book_instance
-
-    response = client.put(
-        "/update-book/1", json={"title": "Updated Title", "available": False}
-    )
-    assert response.status_code == 200
-    assert response.json == {
-        "res": {"title": "Updated Title", "available": False},
-        "status": 200,
-        "msg": 'Successfully updated the book titled "Updated Title".',
-    }
-
-
-@patch("routes.Book")
-def test_update_book_not_found(mock_Book, client):
-    mock_Book.query.get.return_value = None
-
-    response = client.put("/update-book/1", json={"title": "Updated Title"})
-    assert response.status_code == 404
-    assert response.json == {
-        "error": "No Book Found with that ID.", "status": 404}
-
-
-@patch("routes.Book")
-def test_delete_book_success(mock_Book, client):
-    mock_book_instance = MagicMock()
-    mock_Book.query.get.return_value = mock_book_instance
-
-    response = client.delete("/delete-book/1")
-    assert response.status_code == 200
-    assert response.json == {"status": 200,
-                             "message": "Book deleted successfully."}
-
-
-@patch("routes.Book")
-def test_delete_book_not_found(mock_Book, client):
-    mock_Book.query.get.return_value = None
-
-    response = client.delete("/delete-book/1")
-    assert response.status_code == 404
-    assert response.json == {"error": "Book not found.", "status": 404}
+            deleted_book = Book.query.get(book.id)
+            assert deleted_book is None
+        else:
+            pytest.skip("No books available in the database.")

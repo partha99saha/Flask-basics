@@ -22,4 +22,5 @@ class TestingConfig(Config):
 
 
 # DATABASE_URI=sqlite:///db.sqlite
+# TEST_DATABASE_URI=sqlite:///test_db.sqlite
 # JWT_SECRET=12345@Secret

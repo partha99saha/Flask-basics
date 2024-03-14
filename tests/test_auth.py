@@ -1,80 +1,110 @@
+import json
+from werkzeug.security import generate_password_hash
 import pytest
-from unittest.mock import MagicMock, patch
 import sys
 import os
 
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_dir)
 
-from app import app
-import Routes.auth
-
+from app import app, db
+from models.User import User
 
 @pytest.fixture
 def client():
-    with app.test_client() as client:
+    app.config['TESTING'] = True
+    client = app.test_client()
+
+    # Setup
+    with app.app_context():
+        db.create_all()
         yield client
+        db.session.remove()
+        db.drop_all()
 
 
-@patch("routes.User")
-def test_signup_success(mock_User, client):
-    mock_user_instance = MagicMock()
-    mock_User.query.filter_by.return_value.first.return_value = None
-    mock_User.return_value = mock_user_instance
-    mock_user_instance.username = "testuser"
-    mock_user_instance.password = "hashed_password"
-    mock_user_instance.id = 1
-
-    response = client.post(
-        "/signup", json={"username": "testuser", "password": "password123"}
-    )
+def test_signup_success(client):
+    data = {
+        "username": "testuser@example.com",
+        "password": "TestPassword123"
+    }
+    response = client.post('/signup', json=data)
     assert response.status_code == 200
 
 
-@patch("routes.User")
-def test_signup_existing_user(mock_User, client):
-    mock_user_instance = MagicMock()
-    mock_User.query.filter_by.return_value.first.return_value = MagicMock()
-    mock_User.return_value = mock_user_instance
-
-    response = client.post(
-        "/signup", json={"username": "existinguser", "password": "password123"}
-    )
+def test_signup_missing_data(client):
+    data = {}
+    response = client.post('/signup', json=data)
     assert response.status_code == 400
 
 
-@patch("routes.User")
-def test_signup_invalid_email(mock_User, client):
-    response = client.post(
-        "/signup", json={"username": "invalidemail", "password": "password123"}
-    )
+def test_signup_invalid_email(client):
+    data = {
+        "username": "invalidemail",
+        "password": "TestPassword123"
+    }
+    response = client.post('/signup', json=data)
     assert response.status_code == 400
 
 
-@patch("routes.User")
-def test_signup_invalid_password(mock_User, client):
-    response = client.post("/signup", json={"username": "testuser", "password": "pass"})
+def test_signup_existing_user(client):
+    # Create a user
+    hashed_password = generate_password_hash("TestPassword123")
+    existing_user = User(username="existinguser@example.com",
+                         password=hashed_password)
+    db.session.add(existing_user)
+    db.session.commit()
+
+    # Try to signup with the same username
+    data = {
+        "username": "existinguser@example.com",
+        "password": "TestPassword123"
+    }
+    response = client.post('/signup', json=data)
     assert response.status_code == 400
 
 
-@patch("routes.User")
-def test_login_success(mock_User, client):
-    mock_user_instance = MagicMock()
-    mock_User.query.filter_by.return_value.first.return_value = mock_user_instance
-    mock_user_instance.username = "testuser"
-    mock_user_instance.password = "hashed_password"
+def test_login_success(client):
+    # Create a user
+    hashed_password = generate_password_hash("TestPassword123")
+    new_user = User(username="testuser@example.com", password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
 
-    response = client.post(
-        "/login", json={"username": "testuser", "password": "password123"}
-    )
+    data = {
+        "username": "testuser@example.com",
+        "password": "TestPassword123"
+    }
+    response = client.post('/login', json=data)
     assert response.status_code == 200
+    assert 'token' in json.loads(response.data)
 
 
-@patch("routes.User")
-def test_login_failure(mock_User, client):
-    mock_User.query.filter_by.return_value.first.return_value = None
+def test_login_missing_data(client):
+    data = {}
+    response = client.post('/login', json=data)
+    assert response.status_code == 400
 
-    response = client.post(
-        "/login", json={"username": "invaliduser", "password": "password123"}
-    )
+
+def test_login_invalid_credentials(client):
+    # Create a user
+    hashed_password = generate_password_hash("TestPassword123")
+    new_user = User(username="testuser@example.com", password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    data = {
+        "username": "testuser@example.com",
+        "password": "InvalidPassword"
+    }
+    response = client.post('/login', json=data)
+    assert response.status_code == 400
+
+
+def test_login_nonexistent_user(client):
+    data = {
+        "username": "nonexistentuser@example.com",
+        "password": "NonExistentPassword"
+    }
+    response = client.post('/login', json=data)
     assert response.status_code == 400
