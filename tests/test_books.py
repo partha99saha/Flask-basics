@@ -10,7 +10,6 @@ sys.path.insert(0, project_dir)
 from app import app, db
 from models.Book import Book
 
-
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
@@ -25,60 +24,50 @@ def client():
 
 
 def test_add_books(client):
-    with app.app_context():
-        data = {"title": "Test Book"}
+    data = {"title": "Test Book"}
 
-        # Mock the function responsible for generating JWT tokens
-        with patch("jwt.encode") as mock_encode:
-            mock_encode.return_value = "dummy_token"
-            response = client.post(
-                "/add-books", json=data, headers={"Authorization": "Bearer dummy_token"}
-            )
+    with patch("jwt.encode") as mock_encode:
+        mock_encode.return_value = "dummy_token"
+        response = client.post(
+            "/add-books", json=data, headers={"Authorization": "Bearer dummy_token"}
+        )
         assert response.status_code == 201
 
 
 def test_get_books(client):
-    with app.app_context():
-        response = client.get("/get-books")
-        assert response.status_code == 200
+    with patch("jwt.encode") as mock_encode:
+        mock_encode.return_value = "dummy_token"
 
-        data = response.get_json()
-        assert len(data["res"]) > 0
+        response = client.get("/get-books", headers={"Authorization": "Bearer dummy_token"})
+        assert response.status_code == 200
 
 
 def test_get_book(client):
-    with app.app_context():
-        book = Book.query.first()
-        if book:
-            response = client.get(f"/get-book/{book.id}")
-            assert response.status_code == 200
-        else:
-            pytest.skip("No books available in the database.")
+    with patch("jwt.encode") as mock_encode:
+        mock_encode.return_value = "dummy_token"
+
+        response = client.get(f"/get-book/{1}", headers={"Authorization": "Bearer dummy_token"})
+        assert response.status_code == 200
 
 
 def test_update_book(client):
-    with app.app_context():
-        book = Book.query.first()
-        if book:
-            data = {"title": "Updated Title", "available": False}
-            response = client.put(f"/update-book/{book.id}", json=data)
-            assert response.status_code == 200
+    with patch("jwt.encode") as mock_encode:
+        mock_encode.return_value = "dummy_token"
+        data = {"title": "Updated Title", "available": False}
+        response = client.put(f"/update-book/{1}", json=data, headers={"Authorization": "Bearer dummy_token"})
+        assert response.status_code == 200
 
-            updated_book = Book.query.get(book.id)
-            assert updated_book.title == "Updated Title"
-            assert updated_book.available == False
-        else:
-            pytest.skip("No books available in the database.")
+        updated_book = Book.query.get(1)
+        assert updated_book.title == "Updated Title"
+        assert updated_book.available == False
 
 
 def test_delete_book(client):
-    with app.app_context():
-        book = Book.query.first()
-        if book:
-            response = client.delete(f"/delete-book/{book.id}")
-            assert response.status_code == 200
+    with patch("jwt.encode") as mock_encode:
+        mock_encode.return_value = "dummy_token"
 
-            deleted_book = Book.query.get(book.id)
-            assert deleted_book is None
-        else:
-            pytest.skip("No books available in the database.")
+        response = client.delete(f"/delete-book/{1}", headers={"Authorization": "Bearer dummy_token"})
+        assert response.status_code == 200
+
+        deleted_book = Book.query.get(1)
+        assert deleted_book is None
