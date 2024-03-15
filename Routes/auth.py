@@ -45,6 +45,17 @@ def signup():
         return jsonify(error_response("Failed to create user")), 500
 
 
+def encode_token(user):
+    payload = {
+        "user_id": user.id,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+    }
+    secret_key = app.config["JWT_SECRET"]
+    # generate JWT token
+    token = jwt.encode(payload, secret_key, algorithm="HS256")
+    return token
+
+
 @app.route("/login", methods=["POST"])
 def login():
     try:
@@ -53,27 +64,20 @@ def login():
         password = data.get("password")
 
         if not (username and password):
-            return jsonify({"error": "Please provide username and password"}), 400
+            return jsonify(error_response("Please provide username and password")), 400
 
         user = User.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.password, password):
-            payload = {
-                "user_id": user.id,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
-            }
-            secret_key = app.config["JWT_SECRET"]
-            # generate JWT token
-            token = jwt.encode(payload, secret_key, algorithm="HS256")
-
+            token = encode_token(user)
             return jsonify({"token": token}), 200
         else:
             return (
-                jsonify({"error": "Login failed, Username or password is wrong"}),
+                jsonify(error_response("Login failed, Username or password is wrong")),
                 400,
             )
 
     except Exception as e:
         print("Error occurred during login:", str(e))
         db.session.rollback()
-        return jsonify({"error": "Internal Server Error"}), 500
+        return jsonify(error_response("Internal Server Error")), 500

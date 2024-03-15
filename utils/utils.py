@@ -17,8 +17,8 @@ def is_validate_password(password):
 
 
 def success_response(message):
-    return {"message": message, "success": True}
+    return {"response": message, "success": True}
 
 
 def error_response(message):
-    return {"message": message, "success": False}
+    return {"response": message, "success": False}

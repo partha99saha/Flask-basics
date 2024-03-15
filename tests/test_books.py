@@ -16,7 +16,7 @@ def client():
     app.config["TESTING"] = True
     client = app.test_client()
 
-    #setup
+    # setup
     with app.app_context():
         db.create_all()
         yield client
@@ -27,13 +27,13 @@ def client():
 def test_add_books(client):
     with app.app_context():
         data = {"title": "Test Book"}
-        
+
         # Mock the function responsible for generating JWT tokens
-        with patch('jwt.encode') as mock_encode:
+        with patch("jwt.encode") as mock_encode:
             mock_encode.return_value = "dummy_token"
-            
-            # Make the POST request with the dummy token
-            response = client.post("/add-books", json=data, headers={"Authorization": "Bearer dummy_token"})
+            response = client.post(
+                "/add-books", json=data, headers={"Authorization": "Bearer dummy_token"}
+            )
         assert response.status_code == 201
 
 

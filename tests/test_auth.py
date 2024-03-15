@@ -10,9 +10,10 @@ sys.path.insert(0, project_dir)
 from app import app, db
 from models.User import User
 
+
 @pytest.fixture
 def client():
-    app.config['TESTING'] = True
+    app.config["TESTING"] = True
     client = app.test_client()
 
     # Setup
@@ -24,43 +25,33 @@ def client():
 
 
 def test_signup_success(client):
-    data = {
-        "username": "testuser@example.com",
-        "password": "TestPassword123"
-    }
-    response = client.post('/signup', json=data)
+    data = {"username": "testuser@example.com", "password": "TestPassword123"}
+    response = client.post("/signup", json=data)
     assert response.status_code == 200
 
 
 def test_signup_missing_data(client):
     data = {}
-    response = client.post('/signup', json=data)
+    response = client.post("/signup", json=data)
     assert response.status_code == 400
 
 
 def test_signup_invalid_email(client):
-    data = {
-        "username": "invalidemail",
-        "password": "TestPassword123"
-    }
-    response = client.post('/signup', json=data)
+    data = {"username": "invalidemail", "password": "TestPassword123"}
+    response = client.post("/signup", json=data)
     assert response.status_code == 400
 
 
 def test_signup_existing_user(client):
     # Create a user
     hashed_password = generate_password_hash("TestPassword123")
-    existing_user = User(username="existinguser@example.com",
-                         password=hashed_password)
+    existing_user = User(username="existinguser@example.com", password=hashed_password)
     db.session.add(existing_user)
     db.session.commit()
 
     # Try to signup with the same username
-    data = {
-        "username": "existinguser@example.com",
-        "password": "TestPassword123"
-    }
-    response = client.post('/signup', json=data)
+    data = {"username": "existinguser@example.com", "password": "TestPassword123"}
+    response = client.post("/signup", json=data)
     assert response.status_code == 400
 
 
@@ -71,18 +62,15 @@ def test_login_success(client):
     db.session.add(new_user)
     db.session.commit()
 
-    data = {
-        "username": "testuser@example.com",
-        "password": "TestPassword123"
-    }
-    response = client.post('/login', json=data)
+    data = {"username": "testuser@example.com", "password": "TestPassword123"}
+    response = client.post("/login", json=data)
     assert response.status_code == 200
-    assert 'token' in json.loads(response.data)
+    assert "token" in json.loads(response.data)
 
 
 def test_login_missing_data(client):
     data = {}
-    response = client.post('/login', json=data)
+    response = client.post("/login", json=data)
     assert response.status_code == 400
 
 
@@ -93,18 +81,15 @@ def test_login_invalid_credentials(client):
     db.session.add(new_user)
     db.session.commit()
 
-    data = {
-        "username": "testuser@example.com",
-        "password": "InvalidPassword"
-    }
-    response = client.post('/login', json=data)
+    data = {"username": "testuser@example.com", "password": "InvalidPassword"}
+    response = client.post("/login", json=data)
     assert response.status_code == 400
 
 
 def test_login_nonexistent_user(client):
     data = {
         "username": "nonexistentuser@example.com",
-        "password": "NonExistentPassword"
+        "password": "NonExistentPassword",
     }
-    response = client.post('/login', json=data)
+    response = client.post("/login", json=data)
     assert response.status_code == 400

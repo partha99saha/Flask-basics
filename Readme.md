@@ -13,6 +13,7 @@
 ## pip install Werkzeug
 ## pip install black
 ## pip install watchdog
+## pip install pytest-cov
 ## pip install -r requirements.txt
 
 ## ----- Run CMDs -----
