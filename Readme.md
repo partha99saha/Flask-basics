@@ -1,4 +1,4 @@
-# Basic Python-flask REST-API App with JWT authentication, unit-test with Pytest
+# Python-flask REST-API App with SQLAlchemy, JWT authentication, Unit-test with Pytest
 
 
 ## ----- Install CMDs ------
