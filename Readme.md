@@ -19,4 +19,5 @@
 ## ----- Run CMDs -----
 ## flask run
 ## pytest
+## pytest --cov --cov-report=html:coverage_re
 ## black .

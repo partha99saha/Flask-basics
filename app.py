@@ -15,8 +15,8 @@ import models.User
 import models.Book
 
 # Routes import
-import Routes.auth
-import Routes.books
+import controllers.auth
+import controllers.books
 
 
 if __name__ == "__main__":

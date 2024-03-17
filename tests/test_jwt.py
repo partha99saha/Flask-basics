@@ -1,6 +1,14 @@
 import pytest
 from unittest.mock import MagicMock
 from services.jwt import auth_required
+from flask import Flask, request
+import sys
+import os
+
+project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, project_dir)
+
+from models.User import User
 
 # Mocking dependencies
 jwt_mock = MagicMock()
@@ -12,7 +20,7 @@ request_mock = MagicMock()
 @pytest.fixture(autouse=True)
 def patch_dependencies(monkeypatch):
     monkeypatch.setattr("services.jwt", jwt_mock)
-    monkeypatch.setattr("services.User", user_mock)
+    monkeypatch.setattr("models.User", user_mock)
     monkeypatch.setattr("services.request", request_mock)
 
 
