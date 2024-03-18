@@ -7,17 +7,19 @@
 ## pip freeze > requirements.txt
 
 ## pip install Flask
-## pip install pytest
 ## pip install pytest-mock
 ## pip install PyJWT
 ## pip install Werkzeug
 ## pip install black
 ## pip install watchdog
+## pip install pytest
 ## pip install pytest-cov
-## pip install -r requirements.txt
+## pip install flake8
 
 ## ----- Run CMDs -----
+## pip install -r requirements.txt
 ## flask run
-## pytest
+## pytest --cov
 ## pytest --cov --cov-report=html:coverage_re
 ## black .
+## flake8
