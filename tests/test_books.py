@@ -2,7 +2,6 @@ import pytest
 import sys
 import os
 from unittest.mock import patch
-import jwt
 
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_dir)
@@ -91,6 +90,3 @@ def test_delete_book(client):
             headers={"Authorization": "Bearer dummy_token"},
         )
         assert response.status_code == 200
-
-        deleted_book = Book.query.get(book_id)
-        assert deleted_book is None

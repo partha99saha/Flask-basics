@@ -21,9 +21,7 @@ def test_auth_required_invalid_token():
     with patch("services.jwt.jwt", jwt_mock):
         with Flask(__name__).test_request_context():
             request.headers = {"Authorization": "Bearer invalid_token"}
-            jwt_mock.decode.side_effect = (
-                jwt_mock.InvalidTokenError
-            )
+            jwt_mock.decode.side_effect = jwt_mock.InvalidTokenError
             with pytest.raises(TypeError):
                 auth_required(lambda: None)()
 
@@ -32,9 +30,7 @@ def test_auth_required_expired_token():
     with patch("services.jwt.jwt", jwt_mock):
         with Flask(__name__).test_request_context():
             request.headers = {"Authorization": "Bearer expired_token"}
-            jwt_mock.decode.side_effect = (
-                jwt_mock.ExpiredSignatureError
-            )
+            jwt_mock.decode.side_effect = jwt_mock.ExpiredSignatureError
             with pytest.raises(TypeError):
                 auth_required(lambda: None)()
 

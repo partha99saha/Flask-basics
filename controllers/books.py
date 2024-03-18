@@ -6,14 +6,14 @@ from utils.utils import success_response, error_response
 
 
 @app.route("/add-books", methods=["POST"])
-# @auth_required
+@auth_required
 def addBooks():
     try:
         title = request.json.get("title")
         if not title:
             return jsonify(error_response("Title is required")), 400
 
-        existing_book = Book.query.filter_by(title=title).first()
+        existing_book = db.session.query(Book).filter_by(title=title).first()
         if existing_book:
             return (
                 jsonify(
@@ -28,7 +28,7 @@ def addBooks():
         db.session.add(new_book)
         db.session.commit()
 
-        return (jsonify(success_response(new_book.serialize())), 201)
+        return jsonify(success_response(new_book.serialize())), 201
 
     except Exception as e:
         print("Error occurred during add-books:", str(e))
@@ -42,14 +42,14 @@ def addBooks():
 
 
 @app.route("/get-books", methods=["GET"])
-# @auth_required
+@auth_required
 def getBooks():
     try:
-        library = Book.query.all()
+        library = db.session.query(Book).all()
         serialized_books = [book.serialize() for book in library]
 
         if serialized_books:
-            return (jsonify(success_response(serialized_books)), 200)
+            return jsonify(success_response(serialized_books)), 200
         else:
             return (
                 jsonify(error_response("No books found in the library!")),
@@ -66,15 +66,15 @@ def getBooks():
 
 
 @app.route("/get-book/<int:id>", methods=["GET"])
-# @auth_required
+@auth_required
 def getbook(id):
     try:
-        book_details = Book.query.get(id)
+        book_details = db.session.get(Book, id)
         if not book_details:
             return jsonify(error_response("Book not found")), 404
 
         serialized_book = book_details.serialize()
-        return (jsonify(success_response(serialized_book)), 200)
+        return jsonify(success_response(serialized_book)), 200
 
     except Exception as e:
         print("Error occurred during get-book:", str(e))
@@ -82,14 +82,14 @@ def getbook(id):
 
 
 @app.route("/update-book/<int:id>", methods=["PUT"])
-# @auth_required
+@auth_required
 def updateBookTitles(id):
     try:
         data = request.json
         title = data.get("title")
         availability = data.get("available")
 
-        book_details = Book.query.get(id)
+        book_details = db.session.get(Book, id)
         if not book_details:
             return jsonify(error_response("No Book Found with that ID.")), 404
 
@@ -121,10 +121,10 @@ def updateBookTitles(id):
 
 
 @app.route("/delete-book/<int:id>", methods=["DELETE"])
-# @auth_required
+@auth_required
 def deleteRequest(id):
     try:
-        book_detail = Book.query.get(id)
+        book_detail = db.session.get(Book, id)
         if book_detail:
             db.session.delete(book_detail)
             db.session.commit()
