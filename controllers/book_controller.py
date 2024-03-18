@@ -1,13 +1,16 @@
 from flask import request, jsonify
-from app import app, db
-from models.Book import Book
-from services.jwt import auth_required
+from app import db
+from models.book_model import Book
 from utils.utils import success_response, error_response
 
 
-@app.route("/add-books", methods=["POST"])
-@auth_required
-def addBooks():
+def add_books():
+    """
+    Add a new book to the library.
+
+    Returns:
+        JSON: Serialized book data with success message.
+    """
     try:
         title = request.json.get("title")
         if not title:
@@ -31,7 +34,7 @@ def addBooks():
         return jsonify(success_response(new_book.serialize())), 201
 
     except Exception as e:
-        print("Error occurred during add-books:", str(e))
+        # print("Error occurred during add-books:", str(e))
         db.session.rollback()
         return (
             jsonify(
@@ -41,9 +44,13 @@ def addBooks():
         )
 
 
-@app.route("/get-books", methods=["GET"])
-@auth_required
-def getBooks():
+def get_books():
+    """
+    Retrieve all books from the library.
+
+    Returns:
+        JSON: Serialized list of books with success message.
+    """
     try:
         library = db.session.query(Book).all()
         serialized_books = [book.serialize() for book in library]
@@ -56,7 +63,7 @@ def getBooks():
                 404,
             )
     except Exception as e:
-        print("Error occurred during get-books:", str(e))
+        # print("Error occurred during get-books:", str(e))
         return (
             jsonify(
                 error_response("An error occurred while retrieving books")
@@ -65,9 +72,16 @@ def getBooks():
         )
 
 
-@app.route("/get-book/<int:id>", methods=["GET"])
-@auth_required
-def getbook(id):
+def get_book(id):
+    """
+    Retrieve details of a specific book.
+
+    Args:
+        id (int): The ID of the book to retrieve.
+
+    Returns:
+        JSON: Serialized book data with success message.
+    """
     try:
         book_details = db.session.get(Book, id)
         if not book_details:
@@ -77,13 +91,20 @@ def getbook(id):
         return jsonify(success_response(serialized_book)), 200
 
     except Exception as e:
-        print("Error occurred during get-book:", str(e))
+        # print("Error occurred during get-book:", str(e))
         return jsonify(error_response("Internal Server Error")), 500
 
 
-@app.route("/update-book/<int:id>", methods=["PUT"])
-@auth_required
-def updateBookTitles(id):
+def update_book_titles(id):
+    """
+    Update the title of a book.
+
+    Args:
+        id (int): The ID of the book to update.
+
+    Returns:
+        JSON: Success message with the updated book title.
+    """
     try:
         data = request.json
         title = data.get("title")
@@ -110,7 +131,7 @@ def updateBookTitles(id):
         )
 
     except Exception as e:
-        print("Error occurred during update-title:", str(e))
+        # print("Error occurred during update-title:", str(e))
         db.session.rollback()
         return (
             jsonify(
@@ -120,9 +141,16 @@ def updateBookTitles(id):
         )
 
 
-@app.route("/delete-book/<int:id>", methods=["DELETE"])
-@auth_required
-def deleteRequest(id):
+def delete_request(id):
+    """
+    Delete a book from the library.
+
+    Args:
+        id (int): The ID of the book to delete.
+
+    Returns:
+        JSON: Success message if book is deleted successfully, else error message.
+    """
     try:
         book_detail = db.session.get(Book, id)
         if book_detail:
@@ -135,7 +163,7 @@ def deleteRequest(id):
         else:
             return jsonify(error_response("Book not found.")), 404
     except Exception as e:
-        print("Error occurred during delete-book:", str(e))
+        # print("Error occurred during delete-book:", str(e))
         db.session.rollback()
         return (
             jsonify(

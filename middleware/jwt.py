@@ -1,18 +1,37 @@
 from functools import wraps
 from flask import request, jsonify
-from models.User import User
+from models.user_model import User
 import jwt
 from app import app
 from utils.utils import success_response, error_response
 
 
 def decode_jwt(token):
+    """
+    Decode JWT token.
+
+    Args:
+        token (str): JWT token.
+
+    Returns:
+        int: User ID decoded from the token.
+    """
     JWT_SECRET = app.config["JWT_SECRET"]
     decoded = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
     return decoded.get("user_id")
 
 
 def auth_required(f):
+    """
+    Decorator function to enforce authentication.
+
+    Args:
+        f (function): The function to be decorated.
+
+    Returns:
+        function: Decorated function.
+    """
+
     @wraps(f)
     def decorator(*args, **kwargs):
         # Check if the token is provided in headers or not

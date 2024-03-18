@@ -11,12 +11,12 @@ app.config.from_object(get_config())
 db = SQLAlchemy(app)
 
 # Models import
-import models.User
-import models.Book
+import models.user_model
+import models.book_model
 
 # Routes import
-import controllers.auth
-import controllers.books
+import routes.auth_routes
+import routes.book_routes
 
 
 if __name__ == "__main__":

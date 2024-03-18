@@ -7,7 +7,7 @@ project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_dir)
 
 from app import app, db
-from models.Book import Book
+from models.book_model import Book
 
 
 @pytest.fixture

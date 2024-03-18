@@ -1,6 +1,6 @@
 from app import app, db
 from werkzeug.security import generate_password_hash, check_password_hash
-from models.User import User
+from models.user_model import User
 from flask import jsonify, request
 import jwt
 import datetime
@@ -12,8 +12,13 @@ from utils.utils import (
 )
 
 
-@app.route("/signup", methods=["POST"])
 def signup():
+    """
+    Controller function for user signup.
+
+    Returns:
+        JSON: Response message.
+    """
     try:
         data = request.get_json()
         username = data.get("username")
@@ -37,7 +42,7 @@ def signup():
 
         is_existing_user = User.query.filter_by(username=username).first()
         if is_existing_user:
-            return jsonify(error_response("User already exsists")), 400
+            return jsonify(error_response("User already exists")), 400
 
         # Hash the password using bcrypt
         hashed_password = generate_password_hash(password)
@@ -49,12 +54,21 @@ def signup():
         return jsonify(success_response("User successfully created")), 200
 
     except Exception as e:
-        print("Error occurred during signup:", str(e))
+        # print("Error occurred during signup:", str(e))
         db.session.rollback()
         return jsonify(error_response("Failed to create user")), 500
 
 
 def encode_token(user):
+    """
+    Encode JWT token.
+
+    Args:
+        user: User object.
+
+    Returns:
+        str: JWT token.
+    """
     payload = {
         "user_id": user.id,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
@@ -65,8 +79,13 @@ def encode_token(user):
     return token
 
 
-@app.route("/login", methods=["POST"])
 def login():
+    """
+    Controller function for user login.
+
+    Returns:
+        JSON: Response message.
+    """
     try:
         data = request.get_json()
         username = data.get("username")
@@ -96,6 +115,6 @@ def login():
             )
 
     except Exception as e:
-        print("Error occurred during login:", str(e))
+        # print("Error occurred during login:", str(e))
         db.session.rollback()
         return jsonify(error_response("Internal Server Error")), 500
