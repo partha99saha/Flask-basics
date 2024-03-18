@@ -20,11 +20,20 @@ def signup():
         password = data.get("password")
 
         if not (username and password):
-            return jsonify(error_response("Please enter username and password")), 400
+            return (
+                jsonify(error_response("Please enter username and password")),
+                400,
+            )
         if not is_valid_email(username):
-            return jsonify(error_response("Please enter a valid username")), 400
+            return (
+                jsonify(error_response("Please enter a valid username")),
+                400,
+            )
         if not is_validate_password(password):
-            return jsonify(error_response("Please enter a valid password")), 400
+            return (
+                jsonify(error_response("Please enter a valid password")),
+                400,
+            )
 
         is_existing_user = User.query.filter_by(username=username).first()
         if is_existing_user:
@@ -64,7 +73,12 @@ def login():
         password = data.get("password")
 
         if not (username and password):
-            return jsonify(error_response("Please provide username and password")), 400
+            return (
+                jsonify(
+                    error_response("Please provide username and password")
+                ),
+                400,
+            )
 
         user = User.query.filter_by(username=username).first()
 
@@ -73,7 +87,11 @@ def login():
             return jsonify({"token": token}), 200
         else:
             return (
-                jsonify(error_response("Login failed, Username or password is wrong")),
+                jsonify(
+                    error_response(
+                        "Login failed, Username or password is wrong"
+                    )
+                ),
                 400,
             )
 

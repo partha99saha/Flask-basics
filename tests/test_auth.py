@@ -45,12 +45,17 @@ def test_signup_invalid_email(client):
 def test_signup_existing_user(client):
     # Create a user
     hashed_password = generate_password_hash("TestPassword123")
-    existing_user = User(username="existinguser@example.com", password=hashed_password)
+    existing_user = User(
+        username="existinguser@example.com", password=hashed_password
+    )
     db.session.add(existing_user)
     db.session.commit()
 
     # Try to signup with the same username
-    data = {"username": "existinguser@example.com", "password": "TestPassword123"}
+    data = {
+        "username": "existinguser@example.com",
+        "password": "TestPassword123",
+    }
     response = client.post("/signup", json=data)
     assert response.status_code == 400
 

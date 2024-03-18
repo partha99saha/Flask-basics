@@ -1,6 +1,6 @@
 import logging
 import os
-
+from app import app
 
 # Create a directory for logs if it doesn't exist
 LOG_DIR = "logger"
@@ -10,7 +10,9 @@ if not os.path.exists(LOG_DIR):
 # Configure logging to write logs to the directory
 log_file = os.path.join(LOG_DIR, "app.log")
 
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+formatter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 file_handler = logging.FileHandler(log_file)
 file_handler.setFormatter(formatter)
 app.logger.addHandler(file_handler)

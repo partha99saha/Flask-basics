@@ -3,9 +3,6 @@ from unittest.mock import MagicMock, patch
 from services.jwt import auth_required
 from flask import Flask, request
 from werkzeug import exceptions
-import sys
-import os
-
 
 jwt_mock = MagicMock()
 user_mock = MagicMock()
@@ -13,7 +10,7 @@ request_mock = MagicMock()
 
 
 def test_auth_required_no_token():
-    with patch('services.jwt.jwt', jwt_mock):
+    with patch("services.jwt.jwt", jwt_mock):
         with Flask(__name__).test_request_context():
             request.headers = {}
             with pytest.raises(exceptions.UnsupportedMediaType):
@@ -21,25 +18,29 @@ def test_auth_required_no_token():
 
 
 def test_auth_required_invalid_token():
-    with patch('services.jwt.jwt', jwt_mock):
+    with patch("services.jwt.jwt", jwt_mock):
         with Flask(__name__).test_request_context():
             request.headers = {"Authorization": "Bearer invalid_token"}
-            jwt_mock.decode.side_effect = jwt_mock.InvalidTokenError  # Ensure jwt is properly imported
+            jwt_mock.decode.side_effect = (
+                jwt_mock.InvalidTokenError
+            )
             with pytest.raises(TypeError):
                 auth_required(lambda: None)()
 
 
 def test_auth_required_expired_token():
-    with patch('services.jwt.jwt', jwt_mock):
+    with patch("services.jwt.jwt", jwt_mock):
         with Flask(__name__).test_request_context():
             request.headers = {"Authorization": "Bearer expired_token"}
-            jwt_mock.decode.side_effect = jwt_mock.ExpiredSignatureError  # Ensure jwt is properly imported
+            jwt_mock.decode.side_effect = (
+                jwt_mock.ExpiredSignatureError
+            )
             with pytest.raises(TypeError):
                 auth_required(lambda: None)()
 
 
 def test_auth_required_valid_token():
-    with patch('services.jwt.jwt', jwt_mock):
+    with patch("services.jwt.jwt", jwt_mock):
         with Flask(__name__).test_request_context():
             request.headers = {"Authorization": "Bearer valid_token"}
             jwt_mock.decode.return_value = {"user_id": 1}
