@@ -31,10 +31,14 @@ def auth_required(f):
 
         try:
             user_id = decode_jwt(token)
+            if not user_id:
+                return jsonify(error_response("Invalid Token")), 401
+
             user = User.query.filter_by(id=user_id).first()
-            user = user.serialize()
             if not user:
                 return jsonify(success_response("Invalid User")), 401
+
+            user = user.serialize()
 
         except jwt.ExpiredSignatureError:
             return jsonify(error_response("Token has expired")), 401
