@@ -34,3 +34,6 @@ def get_config():
 # DATABASE_URI=sqlite:///db.sqlite
 # TEST_DATABASE_URI=sqlite:///test_db.sqlite
 # JWT_SECRET=12345@Secret
+# MAILBOX_EMAIL =
+# MAILBOX_PASSWORD =
+# SMTP_MAILBOX =

@@ -1,6 +1,7 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from app import app
 
 
 def send_reset_password_email(email, reset_token):
@@ -14,9 +15,9 @@ def send_reset_password_email(email, reset_token):
     Raises:
         Exception: If there's an error while sending the email.
     """
-    sender_email = ""
-    sender_password = ""
-    smtp_mailbox = ""
+    sender_email = app.config["MAILBOX_EMAIL"]
+    sender_password = app.config["MAILBOX_PASSWORD"]
+    smtp_mailbox = app.config["SMTP_MAILBOX"]
 
     recipient_email = email
 
