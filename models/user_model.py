@@ -1,3 +1,4 @@
+# import uuid
 from app import db
 from datetime import datetime
 from sqlalchemy import Column, String, Integer, DateTime
@@ -8,6 +9,7 @@ class User(db.Model):
     Represents a user in the system.
 
     Attributes:
+        # uid (str): The unique identifier for the user.
         id (int): The unique identifier for the user.
         username (str): The username of the user.
         password (str): The password of the user.
@@ -16,6 +18,7 @@ class User(db.Model):
 
     __tablename__ = "User"
 
+    # uid = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(20), nullable=False, unique=True)
     password = Column(String(200), nullable=False)

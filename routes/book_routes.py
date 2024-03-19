@@ -73,7 +73,7 @@ def delete_book_route(id):
         id (int): The ID of the book to delete.
 
     Returns:
-        JSON: Success message if book is deleted successfully, 
+        JSON: Success message if book is deleted successfully,
         else error message.
     """
     return delete_request(id)

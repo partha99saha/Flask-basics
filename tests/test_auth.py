@@ -9,6 +9,7 @@ sys.path.insert(0, project_dir)
 
 from app import app, db
 from models.user_model import User
+from controllers.auth_controller import reset_password, forgot_password
 
 
 @pytest.fixture
@@ -140,3 +141,47 @@ def test_login_exception():
         assert (
             response.json == jsonify({"message": "Internal Server Error"}).json
         )
+
+
+def test_reset_password_success(client):
+    # Create a user
+    hashed_password = generate_password_hash("TestPassword123")
+    user = User(username="testuser@example.com", password=hashed_password)
+    db.session.add(user)
+    db.session.commit()
+
+    # Send reset password request
+    data = {"user_id": user.id, "new_password": "NewTestPassword123"}
+    response = client.post("/reset_password", json=data)
+
+    assert response.status_code == 200
+    assert "success" in json.loads(response.data)
+
+
+def test_reset_password_user_not_found(client):
+    # Send reset password request for non-existing user
+    data = {"user_id": 123456, "new_password": "NewTestPassword123"}
+    response = client.post("/reset_password", json=data)
+
+    assert response.status_code == 404
+
+
+def test_forgot_password_success(client):
+    # Create a user
+    user = User(username="testuser@example.com", password="hashed_password")
+    db.session.add(user)
+    db.session.commit()
+
+    # Send forgot password request
+    data = {"email": "testuser@example.com"}
+    response = client.post("/forgot_password", json=data)
+
+    assert response.status_code == 400
+
+
+def test_forgot_password_user_not_found(client):
+    # Send forgot password request for non-existing user
+    data = {"email": "nonexistentuser@example.com"}
+    response = client.post("/forgot_password", json=data)
+
+    assert response.status_code == 400

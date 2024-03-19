@@ -1,3 +1,4 @@
+# import uuid
 from app import db
 from datetime import datetime
 from sqlalchemy import Column, String, Integer, DateTime
@@ -8,6 +9,7 @@ class Book(db.Model):
     Represents a book in the library.
 
     Attributes:
+        # uid (str): The unique identifier for the book (UUID).
         id (int): The unique identifier for the book.
         title (str): The title of the book.
         available (str): The availability status of the book.
@@ -16,6 +18,7 @@ class Book(db.Model):
 
     __tablename__ = "Book"
 
+    # uid = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(200), nullable=False, unique=True)
     available = Column(String(200))
