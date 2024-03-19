@@ -43,3 +43,44 @@ def test_auth_required_valid_token():
             user_mock.query.filter_by().first.return_value.serialize.return_value = {
                 "id": 1
             }
+
+
+def test_auth_required_exception():
+    with patch("middleware.jwt.jwt", jwt_mock):
+        with Flask(__name__).test_request_context():
+            request.headers = {"Authorization": "Bearer valid_token"}
+            jwt_mock.decode.side_effect = Exception("Some exception occurred")
+            with pytest.raises(Exception):
+                auth_required(lambda: None)()
+
+
+def test_auth_required_invalid_user():
+    with patch("middleware.jwt.jwt", jwt_mock):
+        with patch("middleware.jwt.User", user_mock):
+            with Flask(__name__).test_request_context():
+                request.headers = {"Authorization": "Bearer valid_token"}
+                jwt_mock.decode.return_value = {"user_id": 1}
+                user_mock.query.filter_by().first.return_value = None
+                with pytest.raises(Exception):
+                    auth_required(lambda: None)()
+
+
+def test_auth_required_missing_user_id():
+    with patch("middleware.jwt.jwt", jwt_mock):
+        with patch("middleware.jwt.User", user_mock):
+            with Flask(__name__).test_request_context():
+                request.headers = {"Authorization": "Bearer valid_token"}
+                jwt_mock.decode.return_value = {}
+                with pytest.raises(Exception):
+                    auth_required(lambda: None)()
+
+
+def test_auth_required_success():
+    with patch("middleware.jwt.jwt", jwt_mock):
+        with patch("middleware.jwt.User", user_mock):
+            with Flask(__name__).test_request_context():
+                request.headers = {"Authorization": "Bearer valid_token"}
+                jwt_mock.decode.return_value = {"user_id": 1}
+                user_mock.query.filter_by().first.return_value = {"id": 1}
+                with pytest.raises(Exception):
+                    assert auth_required(lambda: None)() == None

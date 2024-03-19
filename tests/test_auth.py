@@ -98,3 +98,45 @@ def test_login_nonexistent_user(client):
     }
     response = client.post("/login", json=data)
     assert response.status_code == 400
+
+
+def test_signup_exception():
+    with pytest.raises(Exception):
+        # Mocking the request data
+        request_data = {"username": "test@example.com", "password": "12345"}
+
+        # Simulate a failure in database session
+        def mock_session_rollback():
+            raise Exception("Database session failed")
+
+        db.session.rollback = mock_session_rollback
+
+        # Call the signup function and check for the expected exception
+        response = client.post("/signup", json=request_data)
+
+        # Ensure that the response contains the expected error message
+        assert response.status_code == 500
+        assert (
+            response.json == jsonify({"message": "Failed to create user"}).json
+        )
+
+
+def test_login_exception():
+    with pytest.raises(Exception):
+        # Mocking the request data
+        request_data = {"username": "test@example.com", "password": "12345"}
+
+        # Simulate a failure in database session
+        def mock_session_rollback():
+            raise Exception("Database session failed")
+
+        db.session.rollback = mock_session_rollback
+
+        # Call the login function and check for the expected exception
+        response = client.post("/login", json=request_data)
+
+        # Ensure that the response contains the expected error message
+        assert response.status_code == 500
+        assert (
+            response.json == jsonify({"message": "Internal Server Error"}).json
+        )

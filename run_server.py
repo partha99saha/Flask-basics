@@ -6,7 +6,8 @@ from watchdog.events import FileSystemEventHandler
 class MyHandler(FileSystemEventHandler):
     def on_any_event(self, event):
         print(
-            f"Restarting server due to {event.event_type} event on {event.src_path}"
+            f"""Restarting server due to {event.event_type} 
+            event on {event.src_path}"""
         )
         subprocess.Popen(
             ["python", "app.py"],

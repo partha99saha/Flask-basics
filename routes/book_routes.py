@@ -5,7 +5,7 @@ from controllers.book_controller import (
     get_books,
     get_book,
     update_book_titles,
-    delete_request
+    delete_request,
 )
 
 
@@ -73,6 +73,7 @@ def delete_book_route(id):
         id (int): The ID of the book to delete.
 
     Returns:
-        JSON: Success message if book is deleted successfully, else error message.
+        JSON: Success message if book is deleted successfully, 
+        else error message.
     """
     return delete_request(id)

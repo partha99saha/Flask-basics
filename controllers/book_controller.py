@@ -21,7 +21,8 @@ def add_books():
             return (
                 jsonify(
                     error_response(
-                        f'Book with title "{title}" already exists in the library'
+                        f"""Book with title "{title}"
+                        already exists in the library"""
                     )
                 ),
                 409,
@@ -149,7 +150,8 @@ def delete_request(id):
         id (int): The ID of the book to delete.
 
     Returns:
-        JSON: Success message if book is deleted successfully, else error message.
+        JSON: Success message if book is deleted successfully,
+        else error message.
     """
     try:
         book_detail = db.session.get(Book, id)
