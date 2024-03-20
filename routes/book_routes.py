@@ -33,47 +33,47 @@ def get_books_route():
     return get_books()
 
 
-@app.route("/get-book/<int:id>", methods=["GET"])
+@app.route("/get-book/<string:uid>", methods=["GET"])
 @auth_required
-def get_book_route(id):
+def get_book_route(uid):
     """
     Retrieve details of a specific book.
 
     Args:
-        id (int): The ID of the book to retrieve.
+        uid (String): The ID of the book to retrieve.
 
     Returns:
         JSON: Serialized book data with success message.
     """
-    return get_book(id)
+    return get_book(uid)
 
 
-@app.route("/update-book/<int:id>", methods=["PUT"])
+@app.route("/update-book/<string:uid>", methods=["PUT"])
 @auth_required
-def update_book_titles_route(id):
+def update_book_titles_route(uid):
     """
     Update the title of a book.
 
     Args:
-        id (int): The ID of the book to update.
+        uid (String): The ID of the book to update.
 
     Returns:
         JSON: Success message with the updated book title.
     """
-    return update_book_titles(id)
+    return update_book_titles(uid)
 
 
-@app.route("/delete-book/<int:id>", methods=["DELETE"])
+@app.route("/delete-book/<string:uid>", methods=["DELETE"])
 @auth_required
-def delete_book_route(id):
+def delete_book_route(uid):
     """
     Delete a book from the library.
 
     Args:
-        id (int): The ID of the book to delete.
+        uid (String): The ID of the book to delete.
 
     Returns:
         JSON: Success message if book is deleted successfully,
         else error message.
     """
-    return delete_request(id)
+    return delete_request(uid)

@@ -53,7 +53,7 @@ def auth_required(f):
             if not user_id:
                 return jsonify(error_response("Invalid Token")), 401
 
-            user = User.query.filter_by(id=user_id).first()
+            user = User.query.filter_by(uid=user_id).first()
             if not user:
                 return jsonify(success_response("Invalid User")), 401
 

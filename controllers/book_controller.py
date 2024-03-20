@@ -1,4 +1,6 @@
 from flask import request, jsonify
+from werkzeug.utils import secure_filename
+import os
 from app import db
 from models.book_model import Book
 from utils.utils import success_response, error_response
@@ -12,7 +14,7 @@ def add_books():
         JSON: Serialized book data with success message.
     """
     try:
-        title = request.json.get("title")
+        title = request.form.get("title")
         if not title:
             return jsonify(error_response("Title is required")), 400
 
@@ -28,7 +30,24 @@ def add_books():
                 409,
             )
 
-        new_book = Book(title=title, available=True)
+        # Check if a file is provided
+        if 'file' not in request.files:
+            return jsonify(error_response("No file provided")), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify(error_response("No file selected for uploading")), 400
+
+        # Save the file to the specified directory
+        UPLOAD_FOLDER = './assets/'
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(file_path)
+        
+        # Create a new book object
+        new_book = Book(title=title, available=True, file_path=file_path)
         db.session.add(new_book)
         db.session.commit()
 
@@ -73,18 +92,18 @@ def get_books():
         )
 
 
-def get_book(id):
+def get_book(uid):
     """
     Retrieve details of a specific book.
 
     Args:
-        id (int): The ID of the book to retrieve.
+        uid (int): The ID of the book to retrieve.
 
     Returns:
         JSON: Serialized book data with success message.
     """
     try:
-        book_details = db.session.get(Book, id)
+        book_details = db.session.get(Book, uid)
         if not book_details:
             return jsonify(error_response("Book not found")), 404
 
@@ -96,29 +115,46 @@ def get_book(id):
         return jsonify(error_response("Internal Server Error")), 500
 
 
-def update_book_titles(id):
+def update_book_titles(uid):
     """
     Update the title of a book.
 
     Args:
-        id (int): The ID of the book to update.
+        uid (int): The ID of the book to update.
 
     Returns:
         JSON: Success message with the updated book title.
     """
     try:
-        data = request.json
+        data = request.form
         title = data.get("title")
         availability = data.get("available")
+        new_file = request.files.get("file")
 
-        book_details = db.session.get(Book, id)
+        book_details = db.session.get(Book, uid)
         if not book_details:
             return jsonify(error_response("No Book Found with that ID.")), 404
 
         if title is not None:
             book_details.title = title
+
         if availability is not None:
             book_details.available = availability
+
+        # Handle file update
+        if new_file:
+            UPLOAD_FOLDER = './assets/'
+            if not os.path.exists(UPLOAD_FOLDER):
+                os.makedirs(UPLOAD_FOLDER)
+                
+            if book_details.file_path:
+                # Remove old file if exists
+                os.remove(book_details.file_path)
+
+            filename = secure_filename(new_file.filename)
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            new_file.save(file_path)
+            book_details.file_path = file_path
 
         db.session.commit()
 
@@ -142,20 +178,27 @@ def update_book_titles(id):
         )
 
 
-def delete_request(id):
+def delete_request(uid):
     """
     Delete a book from the library.
 
     Args:
-        id (int): The ID of the book to delete.
+        uid (int): The ID of the book to delete.
 
     Returns:
         JSON: Success message if book is deleted successfully,
         else error message.
     """
     try:
-        book_detail = db.session.get(Book, id)
+        book_detail = db.session.get(Book, uid)
         if book_detail:
+            if book_detail.file_path:
+                # Check if the file exists before attempting to delete it
+                if os.path.exists(book_detail.file_path):
+                    os.remove(book_detail.file_path)
+                else:
+                    return jsonify(error_response("File associated with the book does not exist.")), 404
+
             db.session.delete(book_detail)
             db.session.commit()
             return (

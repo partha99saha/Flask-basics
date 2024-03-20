@@ -10,6 +10,7 @@
 ## pip install pytest-mock
 ## pip install PyJWT
 ## pip install Werkzeug
+## pip install flask sqlalchemy alembic
 ## pip install black
 ## pip install watchdog
 ## pip install pytest
@@ -19,6 +20,9 @@
 ## ----- Run CMDs -----
 ## pip install -r requirements.txt
 ## flask run
+## flask db upgrade
+## alembic upgrade heads
+## alembic downgrade heads
 ## pytest --cov
 ## pytest --cov --cov-report=html:coverage_re
 ## black .

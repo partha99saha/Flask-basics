@@ -10,6 +10,7 @@ __pycache__/
 venv/
 env/
 ENV/
+assets
 
 # User-specific files
 *.pyc
@@ -23,6 +24,3 @@ Thumbs.db
 
 # Log files
 *.log
-
-# Configuration files
-*.ini

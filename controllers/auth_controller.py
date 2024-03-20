@@ -71,7 +71,7 @@ def encode_token(user):
         str: JWT token.
     """
     payload = {
-        "user_id": user.id,
+        "user_id": user.uid,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
     }
     secret_key = app.config["JWT_SECRET"]
@@ -151,7 +151,7 @@ def reset_password():
                 jsonify(error_response("Please enter a valid password")),
                 400,
             )
-        user = User.query.filter_by(id=user_id).first()
+        user = User.query.filter_by(uid=user_id).first()
         if not user:
             return jsonify(error_response("User not found")), 404
 
