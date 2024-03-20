@@ -18,7 +18,9 @@ class Book(db.Model):
 
     __tablename__ = "Book"
 
-    uid = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    uid = Column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
     title = Column(String(200), nullable=False, unique=True)
     available = Column(String(200))
     file_path = Column(String(255))
@@ -31,7 +33,8 @@ class Book(db.Model):
         Args:
             title (str): The title of the book.
             available (str): The availability status of the book.
-            file_path (str, optional): The file path of the book. Defaults to None.
+            file_path (str, optional): The file path of the book.
+            Defaults to None.
         """
         self.title = title
         self.available = available
@@ -57,4 +60,8 @@ class Book(db.Model):
         Returns:
             dict: A dictionary containing the serialized Book object.
         """
-        return {"title": self.title, "available": self.available, "file_path": self.file_path}
+        return {
+            "title": self.title,
+            "available": self.available,
+            "file_path": self.file_path,
+        }

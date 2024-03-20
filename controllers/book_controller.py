@@ -31,21 +31,24 @@ def add_books():
             )
 
         # Check if a file is provided
-        if 'file' not in request.files:
+        if "file" not in request.files:
             return jsonify(error_response("No file provided")), 400
 
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify(error_response("No file selected for uploading")), 400
+        file = request.files["file"]
+        if file.filename == "":
+            return (
+                jsonify(error_response("No file selected for uploading")),
+                400,
+            )
 
         # Save the file to the specified directory
-        UPLOAD_FOLDER = './assets/'
+        UPLOAD_FOLDER = "./assets/"
         if not os.path.exists(UPLOAD_FOLDER):
             os.makedirs(UPLOAD_FOLDER)
         filename = secure_filename(file.filename)
         file_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(file_path)
-        
+
         # Create a new book object
         new_book = Book(title=title, available=True, file_path=file_path)
         db.session.add(new_book)
@@ -143,10 +146,10 @@ def update_book_titles(uid):
 
         # Handle file update
         if new_file:
-            UPLOAD_FOLDER = './assets/'
+            UPLOAD_FOLDER = "./assets/"
             if not os.path.exists(UPLOAD_FOLDER):
                 os.makedirs(UPLOAD_FOLDER)
-                
+
             if book_details.file_path:
                 # Remove old file if exists
                 os.remove(book_details.file_path)
@@ -197,7 +200,14 @@ def delete_request(uid):
                 if os.path.exists(book_detail.file_path):
                     os.remove(book_detail.file_path)
                 else:
-                    return jsonify(error_response("File associated with the book does not exist.")), 404
+                    return (
+                        jsonify(
+                            error_response(
+                                "File associated with the book does not exist."
+                            )
+                        ),
+                        404,
+                    )
 
             db.session.delete(book_detail)
             db.session.commit()

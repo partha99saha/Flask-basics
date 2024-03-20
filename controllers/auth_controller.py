@@ -10,7 +10,8 @@ from utils.utils import (
     is_valid_email,
     is_validate_password,
 )
-from utils.send_email import send_reset_password_email
+
+# from utils.send_email import send_reset_password_email
 
 
 def signup():
@@ -72,7 +73,8 @@ def encode_token(user):
     """
     payload = {
         "user_id": user.uid,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+        "exp": datetime.datetime.now(datetime.UTC)
+        + datetime.timedelta(hours=12),
     }
     secret_key = app.config["JWT_SECRET"]
     # generate JWT token

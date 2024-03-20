@@ -4,12 +4,14 @@ from dotenv import load_dotenv
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
 
+
 def get_database_uri():
     db_file = os.path.join(basedir, "db.sqlite")
     if os.path.isfile(db_file):
         return f"sqlite:///{os.path.relpath(db_file, basedir)}"
     else:
         return os.environ.get("DATABASE_URI")
+
 
 class Config(object):
     DEBUG = False

@@ -17,7 +17,9 @@ class User(db.Model):
 
     __tablename__ = "User"
 
-    uid = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    uid = Column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
     username = Column(String(20), nullable=False, unique=True)
     password = Column(String(200), nullable=False)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)

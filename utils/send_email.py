@@ -21,7 +21,8 @@ def send_reset_password_email(email, reset_token):
 
     recipient_email = email
 
-    # Create message container - the correct MIME type is multipart/alternative.
+    # Create message container -
+    # the correct MIME type is multipart/alternative.
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "Reset Your Password"
     msg["From"] = sender_email
@@ -32,7 +33,10 @@ def send_reset_password_email(email, reset_token):
     <html>
       <body>
         <p>Click the following link to reset your password:</p>
-        <p><a href="http://yourwebsite.com/reset_password?token={reset_token}">Reset Password</a></p>
+        <p>
+        <a href="http://yourwebsite.com/reset_password?token={reset_token}">
+        Reset Password</a>
+        </p>
       </body>
     </html>
     """
