@@ -151,7 +151,7 @@ def test_reset_password_success(client):
     db.session.commit()
 
     # Send reset password request
-    data = {"user_id": user.id, "new_password": "NewTestPassword123"}
+    data = {"user_id": user.uid, "new_password": "NewTestPassword123"}
     response = client.post("/reset_password", json=data)
 
     assert response.status_code == 200

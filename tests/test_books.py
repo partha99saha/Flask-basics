@@ -36,7 +36,7 @@ def create_dummy_book():
     book = Book(title="Test Book", available=True)
     db.session.add(book)
     db.session.commit()
-    return book.id
+    return book.uid
 
 
 def create_access_token_mock(user_id):
@@ -45,15 +45,48 @@ def create_access_token_mock(user_id):
 
 
 def test_add_books(client):
+    # Test adding a book with no file
     data = {"title": "Test Book"}
-
     with patch("jwt.encode", side_effect=create_access_token_mock):
         response = client.post(
             "/add-books",
             json=data,
             headers={"Authorization": "Bearer dummy_token"},
         )
-        assert response.status_code == 201
+        assert response.status_code == 400
+
+    # Test adding a book with missing title
+    data = {}
+    with patch("jwt.encode", side_effect=create_access_token_mock):
+        response = client.post(
+            "/add-books",
+            json=data,
+            headers={"Authorization": "Bearer dummy_token"},
+        )
+        assert response.status_code == 400
+
+    # Test adding a book with existing title
+    existing_title = "Test Book"
+    create_dummy_book()  # Add a book with existing title
+    data = {"title": existing_title}
+    with patch("jwt.encode", side_effect=create_access_token_mock):
+        response = client.post(
+            "/add-books",
+            json=data,
+            headers={"Authorization": "Bearer dummy_token"},
+        )
+        assert response.status_code == 400
+
+    # Test adding a book with empty file
+    data = {"title": "Book With Empty File"}
+    with patch("jwt.encode", side_effect=create_access_token_mock):
+        response = client.post(
+            "/add-books",
+            data={"file": ""},
+            query_string=data,
+            headers={"Authorization": "Bearer dummy_token"},
+        )
+        assert response.status_code == 400
 
 
 def test_get_books(client):

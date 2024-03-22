@@ -1,4 +1,4 @@
-from app import app
+from flask import Blueprint
 from controllers.auth_controller import (
     signup,
     login,
@@ -6,8 +6,10 @@ from controllers.auth_controller import (
     reset_password,
 )
 
+auth_bp = Blueprint("auth_bp", __name__)
 
-@app.route("/signup", methods=["POST"])
+
+@auth_bp.route("/signup", methods=["POST"])
 def signup_route():
     """
     Route for user signup.
@@ -18,7 +20,7 @@ def signup_route():
     return signup()
 
 
-@app.route("/login", methods=["POST"])
+@auth_bp.route("/login", methods=["POST"])
 def login_route():
     """
     Route for user login.
@@ -29,7 +31,7 @@ def login_route():
     return login()
 
 
-@app.route("/reset_password", methods=["POST"])
+@auth_bp.route("/reset_password", methods=["POST"])
 def reset_password_route():
     """
     Route for resetting user password.
@@ -40,7 +42,7 @@ def reset_password_route():
     return reset_password()
 
 
-@app.route("/forgot_password", methods=["POST"])
+@auth_bp.route("/forgot_password", methods=["POST"])
 def forgot_password_route():
     """
     Route for sending password reset instructions.

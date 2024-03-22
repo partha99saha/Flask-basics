@@ -7,10 +7,12 @@
 ## pip freeze > requirements.txt
 
 ## pip install Flask
+## pip install python-dotenv
 ## pip install pytest-mock
 ## pip install PyJWT
 ## pip install Werkzeug
 ## pip install flask sqlalchemy alembic
+## pip install Flask-Migrate
 ## pip install black
 ## pip install watchdog
 ## pip install pytest

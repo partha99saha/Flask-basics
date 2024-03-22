@@ -1,4 +1,4 @@
-from app import app
+from flask import Blueprint
 from middleware.jwt import auth_required
 from controllers.book_controller import (
     add_books,
@@ -8,8 +8,10 @@ from controllers.book_controller import (
     delete_request,
 )
 
+book_bp = Blueprint("book_bp", __name__)
 
-@app.route("/add-books", methods=["POST"])
+
+@book_bp.route("/add-books", methods=["POST"])
 @auth_required
 def add_books_route():
     """
@@ -21,7 +23,7 @@ def add_books_route():
     return add_books()
 
 
-@app.route("/get-books", methods=["GET"])
+@book_bp.route("/get-books", methods=["GET"])
 @auth_required
 def get_books_route():
     """
@@ -33,7 +35,7 @@ def get_books_route():
     return get_books()
 
 
-@app.route("/get-book/<string:uid>", methods=["GET"])
+@book_bp.route("/get-book/<string:uid>", methods=["GET"])
 @auth_required
 def get_book_route(uid):
     """
@@ -48,7 +50,7 @@ def get_book_route(uid):
     return get_book(uid)
 
 
-@app.route("/update-book/<string:uid>", methods=["PUT"])
+@book_bp.route("/update-book/<string:uid>", methods=["PUT"])
 @auth_required
 def update_book_titles_route(uid):
     """
@@ -63,7 +65,7 @@ def update_book_titles_route(uid):
     return update_book_titles(uid)
 
 
-@app.route("/delete-book/<string:uid>", methods=["DELETE"])
+@book_bp.route("/delete-book/<string:uid>", methods=["DELETE"])
 @auth_required
 def delete_book_route(uid):
     """

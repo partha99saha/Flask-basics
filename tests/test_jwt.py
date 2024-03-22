@@ -41,7 +41,7 @@ def test_auth_required_valid_token():
             request.headers = {"Authorization": "Bearer valid_token"}
             jwt_mock.decode.return_value = {"user_id": 1}
             user_mock.query.filter_by().first.return_value.serialize.return_value = {
-                "id": 1
+                "uid": 1
             }
 
 
@@ -81,6 +81,6 @@ def test_auth_required_success():
             with Flask(__name__).test_request_context():
                 request.headers = {"Authorization": "Bearer valid_token"}
                 jwt_mock.decode.return_value = {"user_id": 1}
-                user_mock.query.filter_by().first.return_value = {"id": 1}
+                user_mock.query.filter_by().first.return_value = {"uid": 1}
                 with pytest.raises(Exception):
                     assert auth_required(lambda: None)() == None
